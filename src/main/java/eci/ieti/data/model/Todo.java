@@ -1,12 +1,30 @@
 package eci.ieti.data.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+
 public class Todo {
 
     private String description;
     private int priority;
-    private String dueDate;
+
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private Date dueDate;
     private String responsible;
     private String status;
+
+    public Todo(){
+
+    }
+
+    public Todo(String description, int priority, Date dueDate, String responsible, String status) {
+        this.description = description;
+        this.priority = priority;
+        this.dueDate = dueDate;
+        this.responsible = responsible;
+        this.status = status;
+    }
 
     public String getDescription() {
         return description;
@@ -24,11 +42,11 @@ public class Todo {
         this.priority = priority;
     }
 
-    public String getDueDate() {
+    public Date getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -50,6 +68,6 @@ public class Todo {
 
     @Override
     public String toString() {
-        return String.format("[ Description: %s, priority: %d, date: %s, responsible: %s, status: %s ]", this.description, this.priority, this.dueDate, this.responsible, this.status);
+        return String.format("[ Description: %s, priority: %d, date: %s, responsible: %s, status: %s ]", this.description, this.priority, this.dueDate.toString(), this.responsible, this.status);
     }
 }

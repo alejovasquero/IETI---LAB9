@@ -96,7 +96,7 @@ Create a Spring Boot Application that connects with MongoDB.
 
     Just 2.
     
-    ```
+    ```java
     Product [id=2, name=Samsung S8 plus, description=All new mobile phone Samsung S8 plus]
     Product [id=4, name=Samsung S9 plus, description=All new mobile phone Samsung S9 plus]
     ```
@@ -105,7 +105,7 @@ Create a Spring Boot Application that connects with MongoDB.
     
     For getting the full result, we just need to maximize the size of the page, or at least give the exact number of elements.
     
-    ```
+    ```java
     productRepository.findByDescriptionContaining("plus", PageRequest.of(0, Integer.MAX_VALUE)
     ```
 - Which are the collection names where the objects are stored? Where are those names assigned?
@@ -116,7 +116,7 @@ Create a Spring Boot Application that connects with MongoDB.
     
     The customer document is created with the @Document annotation in the Customer class, which will be handled by MongoRepository, that extends the CrudRepository interface.
     
-    ```
+    ```java
     @Document
     public class Customer {
     ...
@@ -165,6 +165,18 @@ Create a Spring Boot Application that connects with MongoDB.
 
 *Note:* You can find more information about Spring Data for Mongo DB [here](https://spring.io/projects/spring-data-mongodb) and some code samples [here](https://github.com/spring-projects/spring-data-book/tree/master/mongodb). 
 
+        ```java
+        todoRepository.findByResponsible("david", PageRequest.of(0, Integer.MAX_VALUE)).stream()
+                        .forEach(System.out::println);
+        ```
+        
+   The obtained result was the following:
+        
+   ```text
+        [ Description: description, priority: 2, date: date, responsible: david, status: ready ]
+        [ Description: description, priority: 2, date: date, responsible: david, status: ready ]
+        [ Description: description, priority: 2, date: date, responsible: david, status: ready ]
+   ```
 
 ## Part 2: Custom configuration and Queries
 
@@ -232,8 +244,123 @@ Create a Spring Boot Application that connects with MongoDB.
 7. Create the following queries using the Query class:
 
     * Todos where the dueDate has expired
+    
+        ````java
+           expiredDate.addCriteria(Criteria.where("dueDate").lt(new Date()));
+        ````
+       
+       Result: 
+       ````
+          [ Description: test3, priority: 5, date: Fri Dec 21 00:00:00 COT 2012, responsible: sebastian, status: done ]
+          [ Description: test4, priority: 17, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+          [ Description: test5, priority: 5, date: Sat Dec 21 00:00:00 COT 2013, responsible: sebastian, status: done ]
+          [ Description: test6, priority: 1, date: Sun Dec 21 00:00:00 COT 2014, responsible: alejandro, status: ready ]
+          [ Description: test7, priority: 0, date: Mon Dec 21 00:00:00 COT 2015, responsible: alejandro, status: on progress ]
+          [ Description: test8, priority: 6, date: Wed Dec 21 00:00:00 COT 2016, responsible: alejandro, status: ready ]
+          [ Description: test9, priority: 4, date: Thu Dec 21 00:00:00 COT 2017, responsible: juan, status: ready ]
+          [ Description: test11, priority: 4, date: Thu Dec 21 00:00:00 COT 2000, responsible: alejandro, status: done ]
+          [ Description: 01234567890123456789012345678901234567sss, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+          [ Description: test13, priority: 6, date: Wed Dec 21 00:00:00 COT 2011, responsible: alejandro, status: on progress ]
+          [ Description: test14, priority: 10, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+          [ Description: test15, priority: 11, date: Sat Dec 21 00:00:00 COT 2013, responsible: alejandro, status: on progress ]
+          [ Description: test16, priority: 12, date: Sun Dec 21 00:00:00 COT 2014, responsible: camilo, status: ready ]
+          [ Description: 01234567890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: on progress ]
+          [ Description: 012345sdsdsds67890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: santiago, status: on progress ]
+       ````
+        
     * Todos that are assigned to given user and have priority greater equal to 5
+    
+            ````java
+               assignAndPriority.addCriteria(Criteria.where("responsible").is("alejandro").andOperator(
+                               Criteria.where("priority").gte(5)
+                       ));
+            ````
+           
+           Result: 
+           ````
+              [ Description: test3, priority: 5, date: Fri Dec 21 00:00:00 COT 2012, responsible: sebastian, status: done ]
+              [ Description: test4, priority: 17, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+              [ Description: test5, priority: 5, date: Sat Dec 21 00:00:00 COT 2013, responsible: sebastian, status: done ]
+              [ Description: test6, priority: 1, date: Sun Dec 21 00:00:00 COT 2014, responsible: alejandro, status: ready ]
+              [ Description: test7, priority: 0, date: Mon Dec 21 00:00:00 COT 2015, responsible: alejandro, status: on progress ]
+              [ Description: test8, priority: 6, date: Wed Dec 21 00:00:00 COT 2016, responsible: alejandro, status: ready ]
+              [ Description: test9, priority: 4, date: Thu Dec 21 00:00:00 COT 2017, responsible: juan, status: ready ]
+              [ Description: test11, priority: 4, date: Thu Dec 21 00:00:00 COT 2000, responsible: alejandro, status: done ]
+              [ Description: 01234567890123456789012345678901234567sss, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+              [ Description: test13, priority: 6, date: Wed Dec 21 00:00:00 COT 2011, responsible: alejandro, status: on progress ]
+              [ Description: test14, priority: 10, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+              [ Description: test15, priority: 11, date: Sat Dec 21 00:00:00 COT 2013, responsible: alejandro, status: on progress ]
+              [ Description: test16, priority: 12, date: Sun Dec 21 00:00:00 COT 2014, responsible: camilo, status: ready ]
+              [ Description: 01234567890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: on progress ]
+              [ Description: 012345sdsdsds67890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: santiago, status: on progress ]
+           ````
+   
     * Users that have assigned more than 2 Todos.
-    * Todos that contains a description with a length greater than 30 characters        
+   
+        ````java
+          List<User> users = mongoOperation.findAll(User.class);
+          List<User> ans = new ArrayList<User>();
+          for(User u: users){
+              Query userQuery = new Query();
+              userQuery.addCriteria(Criteria.where("responsible").is(u.getName()));
+              if(mongoOperation.find(userQuery, Todo.class).size() >= 2){
+                  ans.add(u);
+              }
+          }
+          ans.stream().forEach(System.out::println);
+        ````
+           
+        Result: 
+        ````
+              [ Id: 606f33595e9f8f23ee655cf3, name: alejandro, email: example@example.com ]
+              [ Id: 606f335a5e9f8f23ee655cf4, name: juan, email: example@example.com ]
+              [ Id: 606f335a5e9f8f23ee655cfa, name: sebastian, email: example@example.com ]
+              [ Id: 606f335b5e9f8f23ee655cfc, name: camilo, email: example@example.com ]
+       ````
+
+    * Todos that contains a description with a length greater than 30 characters
+        ````java
+          lengthQuery.addCriteria(Criteria.where("description").regex(".{30}"));
+        ````
+           
+        Result: 
+        ````
+            [ Description: 012345678901234567890123456789, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+            [ Description: 01234567890123456789012345678901234567sss, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: ready ]
+            [ Description: 01234567890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: alejandro, status: on progress ]
+            [ Description: 012345sdsdsds67890123456789012345678901234567addadaaa, priority: 1, date: Fri Dec 21 00:00:00 COT 2012, responsible: santiago, status: on progress ]
+        ````  
+      
 
 8. Implement the queries of the previous step using *derived query methods* in your repository interface. Is it possible to implement all of them?
+
+    Interfaces:
+    
+    ````java
+    public interface TodoRepository extends CrudRepository<Todo, Long> {
+    
+        public Page<Todo> findByResponsible(String name, Pageable pageable);
+    
+        @Query("{ 'dueDate': { $lt : ?0 } }")
+        public Page<Todo> findByDateExpired(Date date, Pageable pageable);
+    
+        @Query("{ 'responsible': ?0 ,  'priority': { $gte : ?1 } }")
+        public Page<Todo> findByResponsibleWithMinimunPriority(String responsible, int priority, Pageable pageable);
+    
+    
+        @Query("{ 'description' : { $regex : ?0 } }")
+        public Page<Todo> findByDescription(String regex, Pageable pageable);
+    }
+    ````
+    Usage:
+  
+    ````java
+        System.out.println("EXPIRED");
+        todoRepository.findByDateExpired(new Date(), PageRequest.of(0, Integer.MAX_VALUE)).stream().forEach(System.out::println);
+        
+        System.out.println("RESPONSIBLE AND PRIORITY");
+        todoRepository.findByResponsibleWithMinimunPriority("sebastian", 5, PageRequest.of(0, Integer.MAX_VALUE)).stream().forEach(System.out::println);
+        
+        System.out.println("LENGTH");
+        todoRepository.findByDescription(".{30}", PageRequest.of(0, Integer.MAX_VALUE)).stream().forEach(System.out::println);
+    ````

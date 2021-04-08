@@ -1,16 +1,26 @@
 package eci.ieti.data.model;
 
-public class User {
 
-    private Long id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
+public class User {
+    @Id
+    private String id;
     private String name;
     private String email;
 
-    public Long getId() {
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -32,6 +42,6 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("[ Id: %d, name: %s, email: %s ]", this.id, this.name, this.email);
+        return String.format("[ Id: %s, name: %s, email: %s ]", this.id, this.name, this.email);
     }
 }
